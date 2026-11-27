@@ -41,7 +41,7 @@
   h1 { font-family: 'Dancing Script', cursive; font-size: 44px; line-height: 1.15; margin-bottom: 8px; color: #c2185b; }
   p.sub { font-size: 16px; opacity: .8; margin-bottom: 26px; min-height: 22px; }
   .buttons { display: flex; justify-content: center; align-items: center; gap: 18px; min-height: 64px; }
-  button {
+  button, .btn {
     font-family: inherit; font-weight: 700; font-size: 18px;
     border: none; border-radius: 999px; padding: 14px 34px;
     cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
@@ -61,7 +61,7 @@
     margin-top: 6px;
     background: linear-gradient(135deg, #25d366, #128c7e); color: #fff;
     box-shadow: 0 8px 20px rgba(18, 140, 126, .35);
-    display: inline-flex; align-items: center; gap: 10px;
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
   }
   .share svg { width: 22px; height: 22px; fill: #fff; }
   .copy { margin-top: 12px; background: transparent; color: #c2185b; font-size: 15px; padding: 8px 16px; text-decoration: underline; }
@@ -92,10 +92,10 @@
     <div class="emoji">🥰</div>
     <h1>Biliyordum Sevilay'ım!</h1>
     <p class="sub">Ben de seni çok seviyorum 💕<br>Şimdi cevabını bana gönder 👇</p>
-    <button class="share" id="share">
+    <a class="share btn" id="share" href="https://wa.me/" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
       Cevabımı Gönder
-    </button>
+    </a>
     <br>
     <button class="copy" id="copy">ya da mesajı kopyala</button>
   </main>
@@ -164,17 +164,14 @@
       : 'Evet, seni seviyorum! 💖 Hiç düşünmeden Evet dedim 🥰';
   }
 
-  document.getElementById('share').addEventListener('click', async () => {
-    const text = getMessage();
-    if (tel) {
-      location.href = 'https://wa.me/' + tel + '?text=' + encodeURIComponent(text);
-      return;
-    }
-    if (navigator.share) {
-      try { await navigator.share({ text }); return; } catch (e) { if (e.name === 'AbortError') return; }
-    }
-    location.href = 'https://wa.me/?text=' + encodeURIComponent(text);
-  });
+  // Paylaşım linkini güncel mesajla hazırla (düz link: her ortamda çalışır)
+  const shareEl = document.getElementById('share');
+  function updateShare() {
+    shareEl.href = 'https://wa.me/' + tel + '?text=' + encodeURIComponent(getMessage());
+  }
+  shareEl.addEventListener('pointerdown', updateShare);
+  shareEl.addEventListener('focus', updateShare);
+  yes.addEventListener('click', updateShare);
 
   document.getElementById('copy').addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(getMessage()); toast('Kopyalandı! Şimdi bana yapıştır 💌'); }
