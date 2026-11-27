@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Sana bir sorum var 💌</title>
-<meta property="og:title" content="Sana bir sorum var 💌">
+<title>Sevilay, sana bir sorum var 💌</title>
+<meta property="og:title" content="Sevilay, sana bir sorum var 💌">
 <meta property="og:description" content="Aç ve dürüstçe cevap ver 🙈">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
@@ -80,7 +80,7 @@
 
   <main class="card" id="question">
     <div class="emoji">🥺</div>
-    <h1 id="title">Beni seviyor musun?</h1>
+    <h1 id="title">Sevilay, beni seviyor musun?</h1>
     <p class="sub" id="sub">Dürüst ol ama... 👉👈</p>
     <div class="buttons">
       <button id="yes">Evet 💖</button>
@@ -90,7 +90,7 @@
 
   <main class="card" id="result">
     <div class="emoji">🥰</div>
-    <h1>Biliyordum!</h1>
+    <h1>Biliyordum Sevilay'ım!</h1>
     <p class="sub">Ben de seni çok seviyorum 💕<br>Şimdi cevabını bana gönder 👇</p>
     <button class="share" id="share">
       <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
@@ -105,7 +105,7 @@
 <script>
   // ---- Ayarlar (link ile de verilebilir: ?isim=Ayşe&tel=905551234567) ----
   const params = new URLSearchParams(location.search);
-  const isim = params.get('isim');
+  const isim = params.get('isim') || 'Sevilay';
   const tel = (params.get('tel') || '').replace(/\D/g, '');
   if (isim) document.getElementById('title').textContent = isim + ', beni seviyor musun?';
 
