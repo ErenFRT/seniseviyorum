@@ -9,8 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=JetBrains+Mono:wght@500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; overflow: hidden; }
+  html, body { min-height: 100%; overflow-x: hidden; }
   body {
+    min-height: 100vh; min-height: 100dvh; padding: 24px 0;
+    -webkit-touch-callout: none;
     font-family: 'Quicksand', system-ui, sans-serif;
     background: #0d0a1a; color: #e9e4ff;
     display: flex; align-items: center; justify-content: center;
@@ -71,7 +73,7 @@
   /* Final */
   body.final { background: radial-gradient(circle at 50% 40%, #ff9ebb 0%, #e91e63 60%, #8c1043 100%); transition: background 1s; }
   #heartCanvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-  .letter { font-size: 18px; line-height: 1.6; color: #fff; min-height: 120px; text-shadow: 0 2px 10px rgba(0,0,0,.2); }
+  .letter { font-size: 17px; line-height: 1.65; color: #fff; min-height: 120px; text-shadow: 0 2px 10px rgba(0,0,0,.2); }
   .big { font-family: 'Dancing Script', cursive; font-size: clamp(44px, 13vw, 64px); line-height: 1.1; color: #fff; margin: 14px 0 6px; opacity: 0; transform: scale(.6); transition: all 1s cubic-bezier(.2,1.4,.4,1); text-shadow: 0 4px 24px rgba(120, 0, 40, .45); }
   .big.show { opacity: 1; transform: scale(1); }
   .sign { color: #fff; opacity: 0; transition: opacity 1s .6s; font-size: 16px; }
@@ -141,6 +143,7 @@
 <script>
 {
   const $ = id => document.getElementById(id);
+  document.addEventListener('contextmenu', e => e.preventDefault());
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const show = id => { document.querySelectorAll('.stage').forEach(s => s.classList.remove('on')); $(id).classList.add('on'); };
   const vibrate = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
@@ -215,13 +218,18 @@
   }
 
   // ---- Final ----
-  const letterText = 'Sevilay... Merak etme, telefonun bozulmadı 😄\nSadece hiçbir cihaz bunu ölçemiyor.\nÇünkü sonuç her seferinde aynı çıkıyor:';
+  const letterText = 'Sevilay... Merak etme, telefonun bozulmadı 😄\nSadece hiçbir cihaz bunu ölçemiyor.\n\nÇünkü bazı şeyler sayıyla anlatılmaz.\nSabah gözünü açtığında aklına ilk sen geliyorsun,\ngün içinde gülüşün aklına düşüyor,\nsesini duyunca bütün yorgunluğu geçiyor...\n\nSeninle her gün biraz daha güzel,\nher yarın biraz daha anlamlı.\nYanındayken dünya sessizleşiyor,\nuzaktayken bile kalbi hep sende.\n\nBu sayfayı bir şeyi ölçmek için değil,\nsana bunu bir kez daha söylemek için hazırladı.\nVe ne kadar denersek deneyelim, sonuç hep aynı çıkıyor:';
   async function finale() {
     document.body.classList.add('final'); show('s4'); startHearts();
     const el = $('letter');
-    for (const ch of letterText) { el.innerHTML += ch === '\n' ? '<br>' : ch.replace(/</g, '&lt;'); await sleep(ch === '\n' ? 450 : 42); }
-    await sleep(500);
-    $('big').classList.add('show'); vibrate([100, 80, 100]); formHeart();
+    for (const ch of letterText) {
+      el.innerHTML += ch === '\n' ? '<br>' : ch.replace(/</g, '&lt;');
+      if (ch === '\n') window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      await sleep(ch === '\n' ? 600 : (ch === '.' || ch === ',') ? 220 : 38);
+    }
+    await sleep(900);
+    $('big').classList.add('show');
+    setTimeout(() => $('big').scrollIntoView({ behavior: 'smooth', block: 'center' }), 100); vibrate([100, 80, 100]); formHeart();
     $('sign').classList.add('show'); $('reply').classList.add('show');
   }
   $('reply').addEventListener('pointerdown', () => {
