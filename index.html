@@ -289,7 +289,8 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     { q: 'Birbirimize ilk "seni seviyorum" nerede dedik?', a: 'Telefonda', w: ['Sahilde yürürken', 'Arabada', 'Bir kafede'] },
     { q: 'Benim en sevdiğim yemek hangisi?', a: 'Sarma', w: ['Mantı', 'İskender', 'Lahmacun'] },
     { q: 'Bana aldığın ilk hediye neydi?', a: 'Hoodie', w: ['Saat', 'Parfüm', 'Cüzdan'] },
-    { q: 'En sevdiğim renk hangisi?', a: 'Mavi', w: ['Siyah', 'Yeşil', 'Kırmızı'] }
+    { q: 'En sevdiğim renk hangisi?', a: 'Mavi', w: ['Siyah', 'Yeşil', 'Kırmızı'] },
+    { q: 'Peki en sevdiğim tatlı hangisi?', a: null, w: ['Baklava', 'Künefe', 'Sütlaç', 'Tiramisu'], trick: true }
   ];
   const wrongMsgs = ['Bilemedin 😏 Bir daha düşün...', 'Hmm, Eren\'e sorsak mı? 🤨', 'Yok yok, o değil 🙈', 'Bilemedin 😏 Kalbine sor!'];
   let qi = 0, wrongCount = 0, qLocked = false;
@@ -301,7 +302,7 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     $('quiz-title').textContent = item.q;
     $('q-msg').textContent = ''; $('q-msg').className = '';
     const box = $('opts'); box.replaceChildren();
-    shuffle([item.a, ...item.w]).forEach((txt, i) => {
+    shuffle(item.a ? [item.a, ...item.w] : [...item.w]).forEach((txt, i) => {
       const b = document.createElement('button'); b.className = 'opt'; b.type = 'button';
       const k = document.createElement('span'); k.textContent = 'ABCD'[i];
       b.append(k, document.createTextNode(txt));
@@ -309,17 +310,31 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
       box.append(b);
     });
   }
+  async function trickReveal() {
+    qLocked = true;
+    await sleep(700);
+    $('q-msg').className = 'ok';
+    $('q-msg').innerHTML = 'Bilemedin 😏<br><b style="font-size:24px;line-height:1.5">En sevdiğim tatlı SENSİN 🍯💖</b>';
+    vibrate([80, 60, 120]);
+    await sleep(3200);
+    if (current !== 'quiz') return;
+    $('q-msg').textContent = '✔ Kimlik doğrulandı: gerçekten Sevilay ♥';
+    await sleep(1600);
+    if (current === 'quiz') goAnalysis();
+  }
   async function answer(btn, ok) {
     if (qLocked || current !== 'quiz') return;
     if (!ok) {
       btn.classList.remove('bad'); void btn.offsetWidth; btn.classList.add('bad'); btn.disabled = true;
       $('q-msg').textContent = wrongMsgs[wrongCount++ % wrongMsgs.length]; $('q-msg').className = '';
-      vibrate(120); return;
+      vibrate(120);
+      if (QUIZ[qi].trick && ![...document.querySelectorAll('.opt')].some(o => !o.disabled)) trickReveal();
+      return;
     }
     qLocked = true; btn.classList.add('good'); vibrate(40);
     $('q-msg').className = 'ok';
-    $('q-msg').textContent = qi === QUIZ.length - 1 ? '✔ Kimlik doğrulandı: gerçekten Sevilay ♥' : 'Doğru! 💖';
-    await sleep(qi === QUIZ.length - 1 ? 1600 : 900);
+    $('q-msg').textContent = 'Doğru! 💖';
+    await sleep(900);
     if (current !== 'quiz') return;
     qi++;
     if (qi < QUIZ.length) renderQ(); else goAnalysis();
