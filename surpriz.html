@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sevilay için Gizli Analiz 🔒</title>
+<meta property="og:title" content="Sevilay için Gizli Analiz 🔒">
+<meta property="og:description" content="Bu bağlantı yalnızca Sevilay için. Kimseye gösterme 🤫">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=JetBrains+Mono:wght@500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    background: #0d0a1a; color: #e9e4ff;
+    display: flex; align-items: center; justify-content: center;
+    user-select: none; -webkit-user-select: none;
+  }
+  .stage { display: none; width: min(92vw, 440px); text-align: center; position: relative; z-index: 2; }
+  .stage.on { display: block; animation: fade .5s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .tag { display: inline-block; font-size: 12px; letter-spacing: .5px; color: #8affc1; border: 1px solid #2c5f47; border-radius: 6px; padding: 4px 10px; margin-bottom: 18px; }
+  h1 { font-size: 30px; line-height: 1.2; margin-bottom: 10px; }
+  p { font-size: 16px; opacity: .85; line-height: 1.5; }
+  .btn {
+    font-family: inherit; font-weight: 700; font-size: 17px; border: none; border-radius: 999px;
+    padding: 15px 30px; cursor: pointer; margin-top: 26px; color: #fff;
+    background: linear-gradient(135deg, #6c4cff, #b24cff); box-shadow: 0 10px 26px rgba(124, 76, 255, .45);
+    text-decoration: none; display: inline-block;
+  }
+
+  /* Parmak izi */
+  .finger {
+    width: 150px; height: 150px; margin: 30px auto 14px; border-radius: 50%;
+    border: 2px solid #3a2f6b; position: relative; display: grid; place-items: center;
+    background: radial-gradient(circle, #1c1540 0%, #0d0a1a 70%); touch-action: none;
+  }
+  .finger svg { width: 80px; height: 80px; stroke: #8f7bff; fill: none; stroke-width: 3; stroke-linecap: round; transition: stroke .3s; }
+  .finger.hold svg { stroke: #8affc1; }
+  .ring { position: absolute; inset: -6px; }
+  .ring circle { fill: none; stroke: #8affc1; stroke-width: 4; stroke-dasharray: 490; stroke-dashoffset: 490; transform: rotate(-90deg); transform-origin: center; stroke-linecap: round; }
+  .scanline { position: absolute; left: 10%; right: 10%; height: 2px; background: #8affc1; box-shadow: 0 0 12px #8affc1; top: 20%; opacity: 0; }
+  .finger.hold .scanline { opacity: 1; animation: scan 1s ease-in-out infinite alternate; }
+  @keyframes scan { to { top: 80%; } }
+  .hint { font-size: 14px; opacity: .7; min-height: 20px; }
+
+  /* Analiz */
+  .log { text-align: left; background: #120e26; border: 1px solid #2a2150; border-radius: 14px; padding: 16px; height: 210px; overflow: hidden; font-size: 13px; line-height: 1.7; margin: 18px 0; }
+  .log .ok { color: #8affc1; } .log .warn { color: #ffcf5c; } .log .err { color: #ff6b8a; }
+  .meter-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .meter { height: 18px; border-radius: 999px; background: #1c1540; overflow: visible; position: relative; }
+  .meter i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px; background: linear-gradient(90deg, #6c4cff, #ff4f8b); transition: width .35s ease; }
+  .pct { font-size: 46px; font-weight: 700; margin-top: 14px; color: #fff; }
+  .pct.over { color: #ff6b8a; animation: pulse .4s infinite alternate; }
+  @keyframes pulse { to { transform: scale(1.08); } }
+  .shake { animation: shake .12s infinite; }
+  @keyframes shake { 0%{transform:translate(0,0)} 25%{transform:translate(-4px,2px)} 50%{transform:translate(3px,-3px)} 75%{transform:translate(-2px,-2px)} 100%{transform:translate(2px,3px)} }
+
+  /* Çöküş */
+  #crash { position: fixed; inset: 0; z-index: 20; display: none; background: #0a0a0a; color: #fff; padding: 12vh 8vw; text-align: left; }
+  #crash.on { display: block; }
+  #crash .face { font-size: 90px; margin-bottom: 20px; }
+  #crash h2 { font-size: 24px; font-weight: 500; line-height: 1.35; margin-bottom: 18px; }
+  #crash .small { font-size: 13px; opacity: .65; line-height: 1.7; }
+  .glitch { position: fixed; inset: 0; z-index: 30; pointer-events: none; display: none;
+    background: repeating-linear-gradient(0deg, rgba(255,0,90,.15) 0 3px, transparent 3px 7px); mix-blend-mode: screen; }
+  .glitch.on { display: block; animation: gl .09s steps(2) infinite; }
+  @keyframes gl { 0%{transform:translateX(-6px)} 100%{transform:translateX(6px)} }
+
+  /* Final */
+  body.final { background: radial-gradient(circle at 50% 40%, #ff9ebb 0%, #e91e63 60%, #8c1043 100%); transition: background 1s; }
+  #heartCanvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  .letter { font-size: 18px; line-height: 1.6; color: #fff; min-height: 120px; text-shadow: 0 2px 10px rgba(0,0,0,.2); }
+  .big { font-family: 'Dancing Script', cursive; font-size: clamp(44px, 13vw, 64px); line-height: 1.1; color: #fff; margin: 14px 0 6px; opacity: 0; transform: scale(.6); transition: all 1s cubic-bezier(.2,1.4,.4,1); text-shadow: 0 4px 24px rgba(120, 0, 40, .45); }
+  .big.show { opacity: 1; transform: scale(1); }
+  .sign { color: #fff; opacity: 0; transition: opacity 1s .6s; font-size: 16px; }
+  .sign.show { opacity: .9; }
+  .final-btn { opacity: 0; pointer-events: none; transition: opacity .8s 1.2s; background: #fff; color: #e91e63; box-shadow: 0 10px 26px rgba(120, 0, 40, .35); }
+  .final-btn.show { opacity: 1; pointer-events: auto; }
+  @media (prefers-reduced-motion: reduce) { .shake, .glitch.on, .pct.over { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="heartCanvas"></canvas>
+
+<!-- 1: Giriş -->
+<section class="stage on" id="s1">
+  <span class="tag mono">● GİZLİ BAĞLANTI · YALNIZCA 1 KİŞİ</span>
+  <h1>Sevilay, bu bağlantı sadece senin için 🔒</h1>
+  <p>Kalp Laboratuvarı'na hoş geldin. Bugün çok önemli bir ölçüm yapacağız. Kimliğini doğrulamamız gerekiyor.</p>
+  <button class="btn" id="start">Doğrulamaya Başla</button>
+</section>
+
+<!-- 2: Parmak izi -->
+<section class="stage" id="s2">
+  <span class="tag mono">ADIM 1/3 · KİMLİK DOĞRULAMA</span>
+  <h1>Parmağını daireye bas ve bırakma</h1>
+  <div class="finger" id="finger">
+    <svg class="ring" viewBox="0 0 162 162"><circle cx="81" cy="81" r="78" id="ringC"/></svg>
+    <svg viewBox="0 0 64 64">
+      <path d="M20 46c-2-5-3-10-3-14 0-8 7-15 15-15s15 7 15 15"/>
+      <path d="M26 50c-2-5-3-11-3-18 0-5 4-9 9-9s9 4 9 9c0 6 1 11 3 15"/>
+      <path d="M32 54c-2-6-3-14-3-22a3 3 0 0 1 6 0c0 8 2 14 5 19"/>
+      <path d="M14 38c-1-2-1-4-1-6 0-10 9-19 19-19 6 0 11 2 15 6"/>
+    </svg>
+    <div class="scanline"></div>
+  </div>
+  <p class="hint mono" id="hint">Bekleniyor...</p>
+</section>
+
+<!-- 3: Analiz -->
+<section class="stage" id="s3">
+  <span class="tag mono">ADIM 2/3 · SEVGİ ÖLÇÜMÜ</span>
+  <h1>Eren'in sana olan sevgisi ölçülüyor</h1>
+  <div class="log mono" id="log"></div>
+  <div class="meter-label mono"><span>Sevgi seviyesi</span><span id="cap">Kapasite: 100%</span></div>
+  <div class="meter"><i id="bar"></i></div>
+  <div class="pct mono" id="pct">0%</div>
+</section>
+
+<!-- 4: Final -->
+<section class="stage" id="s4">
+  <div class="letter" id="letter"></div>
+  <div class="big" id="big">Eren seni çok seviyor</div>
+  <div class="sign" id="sign">Ölçülemeyecek kadar, sonsuza kadar 💖</div>
+  <a class="btn final-btn" id="reply" href="https://wa.me/" target="_blank" rel="noopener">Ben de onu çok seviyorum 💌</a>
+</section>
+
+<div id="crash">
+  <div class="face">:(</div>
+  <h2>Cihazınızda bir sorun oluştu ve yeniden başlatılması gerekiyor.</h2>
+  <p class="small mono" id="crashTxt">%0 tamamlandı</p>
+  <p class="small mono" style="margin-top:18px">Durdurma kodu: SEVGI_OVERFLOW_ERENS_HEART<br>Neden: Ölçülen değer cihazın kapasitesini aştı.</p>
+</div>
+<div class="glitch" id="glitch"></div>
+
+<script>
+{
+  const $ = id => document.getElementById(id);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const show = id => { document.querySelectorAll('.stage').forEach(s => s.classList.remove('on')); $(id).classList.add('on'); };
+  const vibrate = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+
+  $('start').addEventListener('click', () => show('s2'));
+
+  // ---- Parmak izi: 2.5 sn basılı tut ----
+  const finger = $('finger'), ringC = $('ringC'), hint = $('hint');
+  const HOLD = 2500; let t0 = 0, raf = 0, done = false;
+  const msgs = ['Taranıyor...', 'Parmak izi okunuyor...', 'Gülüşün eşleşiyor... 😄', 'Neredeyse oldu, bırakma!'];
+  function tick() {
+    const p = Math.min((performance.now() - t0) / HOLD, 1);
+    ringC.style.strokeDashoffset = 490 * (1 - p);
+    hint.textContent = msgs[Math.min(Math.floor(p * msgs.length), msgs.length - 1)];
+    if (p >= 1) { done = true; finger.classList.remove('hold'); hint.textContent = '✔ Kimlik doğrulandı: Sevilay'; vibrate(80); setTimeout(analyze, 900); return; }
+    raf = requestAnimationFrame(tick);
+  }
+  function down(e) { e.preventDefault(); if (done) return; finger.classList.add('hold'); t0 = performance.now(); raf = requestAnimationFrame(tick); }
+  function up() {
+    if (done) return; cancelAnimationFrame(raf); finger.classList.remove('hold');
+    ringC.style.strokeDashoffset = 490; hint.textContent = 'Bıraktın 😤 Tekrar bas ve bekle';
+  }
+  finger.addEventListener('pointerdown', down);
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => finger.addEventListener(ev, up));
+
+  // ---- Analiz ----
+  const log = $('log'), bar = $('bar'), pct = $('pct'), cap = $('cap');
+  function line(txt, cls = '') {
+    const d = document.createElement('div'); if (cls) d.className = cls; d.textContent = '> ' + txt;
+    log.appendChild(d); while (log.children.length > 9) log.firstChild.remove();
+  }
+  async function count(from, to, ms) {
+    const steps = 30;
+    for (let i = 1; i <= steps; i++) {
+      const v = Math.round(from + (to - from) * i / steps);
+      pct.textContent = v + '%'; bar.style.width = Math.min(v, 100) + '%';
+      await sleep(ms / steps);
+    }
+  }
+  async function analyze() {
+    show('s3');
+    const steps = [
+      ['Eren\'in kalbine bağlanılıyor...', '', 700],
+      ['Bağlantı kuruldu ✔', 'ok', 500],
+      ['Sana baktığı anlar sayılıyor... ∞', '', 900],
+      ['Gülüşünü düşünme sıklığı: dakikada 47 kez', 'warn', 900],
+      ['Mesajını beklerken telefonu kontrol etme: aşırı yüksek', 'warn', 900],
+    ];
+    for (const [t, c, w] of steps) { line(t, c); await sleep(w); }
+    await count(0, 100, 2200);
+    line('Sevgi seviyesi %100 — ölçek doldu', 'warn'); await sleep(600);
+    line('Uyarı: değer artmaya devam ediyor!', 'err');
+    pct.classList.add('over'); cap.textContent = 'Kapasite: AŞILDI';
+    await count(100, 300, 1200);
+    line('Kapasite 1000% olarak genişletiliyor...', 'warn'); cap.textContent = 'Kapasite: 1000%';
+    await count(300, 999, 1400);
+    document.body.classList.add('shake'); vibrate([60, 40, 60, 40, 200]);
+    line('HATA: Sayı sistemi yetersiz', 'err'); await sleep(400);
+    line('HATA: SEVGI_OVERFLOW', 'err'); pct.textContent = '∞%'; await sleep(900);
+    $('glitch').classList.add('on'); await sleep(700);
+    crash();
+  }
+
+  // ---- Sahte çöküş ----
+  async function crash() {
+    document.body.classList.remove('shake'); $('glitch').classList.remove('on');
+    $('crash').classList.add('on');
+    for (let v = 0; v <= 100; v += 5) { $('crashTxt').textContent = '%' + v + ' tamamlandı'; await sleep(v < 60 ? 110 : 60); }
+    await sleep(500);
+    $('crash').classList.remove('on');
+    finale();
+  }
+
+  // ---- Final ----
+  const letterText = 'Sevilay... Merak etme, telefonun bozulmadı 😄\nSadece hiçbir cihaz bunu ölçemiyor.\nÇünkü sonuç her seferinde aynı çıkıyor:';
+  async function finale() {
+    document.body.classList.add('final'); show('s4'); startHearts();
+    const el = $('letter');
+    for (const ch of letterText) { el.innerHTML += ch === '\n' ? '<br>' : ch.replace(/</g, '&lt;'); await sleep(ch === '\n' ? 450 : 42); }
+    await sleep(500);
+    $('big').classList.add('show'); vibrate([100, 80, 100]); formHeart();
+    $('sign').classList.add('show'); $('reply').classList.add('show');
+  }
+  $('reply').addEventListener('pointerdown', () => {
+    $('reply').href = 'https://wa.me/?text=' + encodeURIComponent('Ölçüm sonucumu aldım: Ben de seni çok seviyorum Eren 💖 Telefonumu çökertme bir daha 😂');
+  });
+
+  // ---- Kalpler (canvas) ----
+  const cv = $('heartCanvas'), cx = cv.getContext('2d');
+  let W, H, parts = [], target = null;
+  function resize() { W = cv.width = innerWidth * devicePixelRatio; H = cv.height = innerHeight * devicePixelRatio; }
+  addEventListener('resize', resize); resize();
+  function heartXY(t, s) { return [16 * Math.sin(t) ** 3 * s, -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s]; }
+  function drawHeart(x, y, r, c, a) {
+    cx.save(); cx.globalAlpha = a; cx.fillStyle = c; cx.translate(x, y); cx.beginPath();
+    cx.moveTo(0, r * .3); cx.bezierCurveTo(-r, -r * .5, -r * .4, -r * 1.2, 0, -r * .5);
+    cx.bezierCurveTo(r * .4, -r * 1.2, r, -r * .5, 0, r * .3); cx.fill(); cx.restore();
+  }
+  const colors = ['#ffffff', '#ffd1e0', '#ff8fb3', '#ffc2d4'];
+  function startHearts() {
+    for (let i = 0; i < 160; i++) parts.push({ x: Math.random() * W, y: H + Math.random() * H, vx: 0, vy: -(1 + Math.random() * 2) * devicePixelRatio, r: (5 + Math.random() * 9) * devicePixelRatio, c: colors[i % 4], a: .5 + Math.random() * .5, tx: null, ty: null });
+    loop();
+  }
+  function formHeart() {
+    const s = Math.min(W, H) / 40, ox = W / 2, oy = H * .5;
+    parts.forEach((p, i) => { const [hx, hy] = heartXY((i / parts.length) * Math.PI * 2, s); p.tx = ox + hx; p.ty = oy + hy; });
+    setTimeout(() => parts.forEach(p => { p.tx = null; p.vx = (Math.random() - .5) * 8; p.vy = (Math.random() - .5) * 8; }), 3500);
+  }
+  function loop() {
+    cx.clearRect(0, 0, W, H);
+    for (const p of parts) {
+      if (p.tx !== null) { p.x += (p.tx - p.x) * .06; p.y += (p.ty - p.y) * .06; }
+      else { p.x += p.vx; p.y += p.vy; p.vx *= .98; if (p.vy > -1.5 * devicePixelRatio) p.vy -= .05; if (p.y < -30) { p.y = H + 20; p.x = Math.random() * W; p.vx = 0; } }
+      drawHeart(p.x, p.y, p.r, p.c, p.a * .55);
+    }
+    requestAnimationFrame(loop);
+  }
+}
+</script>
+</body>
+</html>
