@@ -73,8 +73,23 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 .romance .hearts{display:block}
 .hearts span{position:absolute;bottom:-30px;left:var(--x);color:#a83d62;opacity:0;font-size:var(--size);animation:float 16s linear var(--delay) infinite}
 @keyframes float{0%{transform:translateY(0) rotate(-12deg);opacity:0}12%{opacity:.15}85%{opacity:.12}100%{transform:translateY(-115vh) rotate(18deg);opacity:0}}
+#crash{position:fixed;inset:0;z-index:50;background:#0067c0;color:#fff;padding:max(14vh,env(safe-area-inset-top)) 9vw 0;text-align:left;font-family:"Segoe UI",system-ui,sans-serif}
+#crash .face{font-size:96px;line-height:1;margin-bottom:26px;font-weight:300}
+#crash h2{font-size:clamp(19px,5.6vw,26px);font-weight:400;line-height:1.4;margin:0 0 22px}
+#crash .small{font-size:13px;line-height:1.75;opacity:.85}
+.glitch{position:fixed;inset:0;z-index:60;pointer-events:none;background:repeating-linear-gradient(0deg,#ff4f8b26 0 3px,transparent 3px 7px);mix-blend-mode:screen;animation:gl .09s steps(2) infinite}
+@keyframes gl{0%{transform:translateX(-6px)}100%{transform:translateX(6px)}}
+.shake{animation:shake .12s infinite}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(-4px,2px)}50%{transform:translate(3px,-3px)}75%{transform:translate(-2px,-2px)}100%{transform:translate(2px,3px)}}
+.pct.over{color:#ff6b8a;animation:pulse .4s infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+.paper .reveal{opacity:0;filter:blur(6px);transform:translateY(14px);transition:opacity 1.6s ease,filter 1.6s ease,transform 1.6s ease}
+.paper .reveal.in{opacity:1;filter:none;transform:none}
+.later{opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+.later.in{opacity:1;pointer-events:auto}
+#tapHint{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);font-size:12px;color:#795164;background:#fff9f4e6;border:1px solid #dca4ad;border-radius:999px;padding:7px 14px;z-index:5;transition:opacity .6s}
 @media(max-width:350px){.shell{padding-left:12px;padding-right:12px}.card{padding:18px}.paper{padding:20px}.kicker{letter-spacing:.1em}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.hearts{display:none!important}}
+@media(prefers-reduced-motion:reduce){.paper .reveal{opacity:1;filter:none;transform:none}.later{opacity:1;pointer-events:auto}*,*::before,*::after{animation:none!important;transition:none!important}.hearts{display:none!important}}
 </style>
 </head>
 <body>
@@ -153,10 +168,18 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 <div class="signature"><span>Seni çok seven</span>Eren'in ♥</div>
 <p class="last">Not: Bütün bu kodları yazdım ama en güzel cümleyi hiçbir algoritma bulamadı. Seni çok seviyorum, bebeğim.</p>
 </article>
-<a class="primary" id="reply" href="https://wa.me/?text=Ben%20de%20seni%20çok%20seviyorum%20Eren%20%E2%9D%A4%EF%B8%8F">Eren'e bir kalp gönder&nbsp; ♥</a>
-<button class="secondary" id="replay">En baştan tekrar yaşa</button>
-<p class="footer">Biraz kod, çokça sevgi. ♥<br>Bu sayfa Eren tarafından sadece Sevilay için hazırlandı. Başkasına atmak yasak 😌</p>
+<a class="primary later" id="reply" href="https://wa.me/?text=Ben%20de%20seni%20çok%20seviyorum%20Eren%20%E2%9D%A4%EF%B8%8F">Eren'e bir kalp gönder&nbsp; ♥</a>
+<button class="secondary later" id="replay">En baştan tekrar yaşa</button>
+<p class="footer later">Biraz kod, çokça sevgi. ♥<br>Bu sayfa Eren tarafından sadece Sevilay için hazırlandı. Başkasına atmak yasak 😌</p>
 </section>
+<div id="crash" hidden>
+<div class="face">:(</div>
+<h2>Cihazınızda bir sorun oluştu ve yeniden başlatılması gerekiyor.</h2>
+<p class="small" id="crashTxt">%0 tamamlandı</p>
+<p class="small mono" style="margin-top:20px">Durdurma kodu: SEVGI_OVERFLOW_EREN_KALBI<br>Neden: Ölçülen sevgi cihazın kapasitesini aştı.</p>
+</div>
+<div class="glitch" id="glitch" hidden></div>
+<p id="tapHint" hidden>Yavaş yavaş oku ♥ · hızlandırmak için dokun</p>
 <noscript><p>Bu sürprizi açmak için tarayıcında JavaScript'i etkinleştirmen gerekiyor.</p></noscript>
 </main>
 <script>
@@ -228,6 +251,16 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     $('bar').style.width = Math.min(value,100)+'%';
     $('cap').textContent = value > 100 ? 'Kapasite aşıldı' : '%100 kapasite';
   }
+  function vibrate(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+  async function crash(token) {
+    document.body.classList.remove('shake'); $('glitch').hidden = true;
+    $('crash').hidden = false;
+    for (let v = 0; v <= 100; v += 5) { if (token !== generation) break; $('crashTxt').textContent = '%' + v + ' tamamlandı'; await sleep(v < 60 ? 140 : 70); }
+    await sleep(600);
+    $('crash').hidden = true;
+    $('pct').classList.remove('over');
+    finishAnalysis();
+  }
   function finishAnalysis() {
     if (current !== 'analysis') return;
     generation++; show('overflow');
@@ -240,12 +273,52 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
       await sleep(reduced.matches ? 220 : 850);
     }
     if (token !== generation) return;
-    $('pct').textContent = '∞'; addLine('SONUÇ: ölçülemiyor. ♥','ok');
-    await sleep(reduced.matches ? 250 : 800);
-    if (token === generation) finishAnalysis();
+    $('pct').classList.add('over');
+    for (let v = 260; v <= 999; v += 37) { if (token !== generation) return; progress(v); await sleep(45); }
+    progress(999);
+    addLine('HATA: Sayı sistemi yetersiz!','warn');
+    vibrate([60,40,60,40,200]);
+    if (!reduced.matches) document.body.classList.add('shake');
+    await sleep(900);
+    $('pct').textContent = '∞'; addLine('HATA: SEVGI_OVERFLOW','warn');
+    await sleep(700);
+    if (!reduced.matches) $('glitch').hidden = false;
+    await sleep(700);
+    if (token !== generation) return;
+    await crash(token);
   }
-  $('open-letter').addEventListener('click',() => show('letter'));
-  $('replay').addEventListener('click',() => { generation++; resetHold(); show('intro'); });
+  const revealEls = [...document.querySelectorAll('#letter .paper > p, #letter .paper > .ornament, #letter .signature')];
+  revealEls.forEach(el => el.classList.add('reveal'));
+  let revealIdx = 0, revealTimer = 0;
+  function revealNext() {
+    clearTimeout(revealTimer);
+    if (current !== 'letter') return;
+    if (revealIdx >= revealEls.length) {
+      document.querySelectorAll('#letter .later').forEach(el => el.classList.add('in'));
+      $('tapHint').hidden = true; return;
+    }
+    const el = revealEls[revealIdx++];
+    el.classList.add('in');
+    const r = el.getBoundingClientRect();
+    if (r.bottom > innerHeight - 60) window.scrollBy({ top: r.bottom - innerHeight + 110, behavior: 'smooth' });
+    const chars = el.textContent.length;
+    const wait = reduced.matches ? 150 : Math.max(1600, Math.min(chars * 45, 11000));
+    revealTimer = setTimeout(revealNext, wait);
+  }
+  function startLetter() {
+    show('letter');
+    revealIdx = 0;
+    revealEls.forEach(el => el.classList.remove('in'));
+    document.querySelectorAll('#letter .later').forEach(el => el.classList.remove('in'));
+    $('tapHint').hidden = false;
+    revealTimer = setTimeout(revealNext, 1400);
+  }
+  document.addEventListener('click', e => {
+    if (current !== 'letter' || $('tapHint').hidden || e.target.closest('a,button')) return;
+    revealNext();
+  });
+  $('open-letter').addEventListener('click', startLetter);
+  $('replay').addEventListener('click',() => { generation++; clearTimeout(revealTimer); $('tapHint').hidden = true; resetHold(); show('intro'); });
   $('reply').href = 'https://wa.me/?text='+encodeURIComponent('Ben de seni çok seviyorum Eren. ❤️');
 })();
 </script>
