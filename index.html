@@ -88,6 +88,26 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 .later{opacity:0;pointer-events:none;transition:opacity 1.2s ease}
 .later.in{opacity:1;pointer-events:auto}
 #tapHint{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);font-size:12px;color:#795164;background:#fff9f4e6;border:1px solid #dca4ad;border-radius:999px;padding:7px 14px;z-index:5;transition:opacity .6s}
+.counters{margin-top:28px;border-top:1px solid #dfb5ba;padding-top:24px;display:grid;gap:12px}
+.cnt{background:#fbeee9;border:1px solid #ecc9cd;border-radius:16px;padding:13px 15px;text-align:center}
+.cnt b{display:block;font:600 11px/1.5 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#9f3155;margin-bottom:4px}
+.cnt .big{font:700 clamp(26px,8vw,34px)/1.15 Georgia,serif;color:#8e2e4c}
+.cnt .sub{font:500 12.5px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:#795164;margin-top:3px;font-variant-numeric:tabular-nums}
+.cnt.wed{background:#a73a5b;border-color:#a73a5b}
+.cnt.wed b,.cnt.wed .big,.cnt.wed .sub{color:#fff3ec}
+.seal{cursor:pointer;-webkit-user-select:none;user-select:none;transition:transform .15s}
+.seal:active{transform:scale(.92)}
+.seal.pulse{animation:sealp 2.4s ease-in-out infinite}
+@keyframes sealp{0%,100%{box-shadow:0 5px 12px #9e375444}50%{box-shadow:0 0 0 9px #a73a5b1f,0 5px 12px #9e375444}}
+#secret{position:fixed;inset:0;z-index:70;background:#3a102466;backdrop-filter:blur(5px);display:grid;place-items:center;padding:22px}
+#secret .box{width:min(100%,420px);background:#fff9f4;border:1px solid #dca4ad;border-radius:24px;padding:28px 24px;text-align:center;box-shadow:0 24px 60px #3a102455;animation:enter .5s ease-out}
+#secret h2{font:italic 700 28px/1.2 Georgia,serif;color:#8e2e4c;margin:10px 0 14px}
+#secret p{font:400 17px/1.8 Georgia,serif;color:#553245;margin:0 0 14px}
+#secret .primary{margin-top:10px;background:#963757;color:#fff9f4;border:0}
+#music{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid #ffffff30;background:#ffffff14;color:#ffa0bb;font-size:19px;backdrop-filter:blur(6px)}
+.romance #music{background:#fff9f4cc;border-color:#dca4ad;color:#9f3155}
+#music.off{opacity:.55;text-decoration:line-through}
+#yt{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:-1}
 @media(max-width:350px){.shell{padding-left:12px;padding-right:12px}.card{padding:18px}.paper{padding:20px}.kicker{letter-spacing:.1em}}
 @media(prefers-reduced-motion:reduce){.paper .reveal{opacity:1;filter:none;transform:none}.later{opacity:1;pointer-events:auto}*,*::before,*::after{animation:none!important;transition:none!important}.hearts{display:none!important}}
 </style>
@@ -148,7 +168,7 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 <section id="letter" class="stage" hidden aria-labelledby="letter-title">
 <article class="paper">
 <header class="paper-head">
-<div class="seal" aria-hidden="true">♥</div>
+<div class="seal" id="seal" role="button" aria-label="Mühür">♥</div>
 <div class="kicker">Kalbimden kalbine</div>
 <h1 id="letter-title" tabindex="-1">Bebeğim Sevilay'ım,</h1>
 <div class="kicker">Sana söylemek istediğim her şey</div>
@@ -166,10 +186,16 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 <p class="aside">Ve bu mektubu ne zaman yeniden okursan, bil ki kalbimde sana ait çok özel bir yer var.</p>
 <p class="promise">Seni bugün de, yarın da, yıllar sonra da aynı insanı yeniden tanır gibi merakla ve sevgiyle sevmek istiyorum.</p>
 <div class="signature"><span>Seni çok seven</span>Eren'in ♥</div>
+<div class="counters" id="counters">
+<div class="cnt"><b>Birlikteyiz · 9 Aralık 2025'ten beri</b><div class="big" id="c-together">—</div><div class="sub" id="c-together-s"></div></div>
+<div class="cnt"><b>Nişanlıyız · 20 Eylül 2026'dan beri</b><div class="big" id="c-engaged">—</div><div class="sub" id="c-engaged-s"></div></div>
+<div class="cnt wed"><b id="c-wed-t">Düğünümüze kalan · 9 Mayıs 2027</b><div class="big" id="c-wed">—</div><div class="sub" id="c-wed-s"></div></div>
+</div>
 <p class="last">Not: Bütün bu kodları yazdım ama en güzel cümleyi hiçbir algoritma bulamadı. Seni çok seviyorum, bebeğim.</p>
 </article>
 <a class="primary later" id="reply" href="https://wa.me/?text=Ben%20de%20seni%20çok%20seviyorum%20Eren%20%E2%9D%A4%EF%B8%8F">Eren'e bir kalp gönder&nbsp; ♥</a>
 <button class="secondary later" id="replay">En baştan tekrar yaşa</button>
+<p class="footer later" id="psst">Psst... mektubun başındaki ♥ mühre üç kez dokun 🤫</p>
 <p class="footer later">Biraz kod, çokça sevgi. ♥<br>Bu sayfa Eren tarafından sadece Sevilay için hazırlandı. Başkasına atmak yasak 😌</p>
 </section>
 <div id="crash" hidden>
@@ -180,6 +206,18 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 </div>
 <div class="glitch" id="glitch" hidden></div>
 <p id="tapHint" hidden>Yavaş yavaş oku ♥ · hızlandırmak için dokun</p>
+<div id="secret" hidden role="dialog" aria-modal="true" aria-labelledby="secret-title">
+<div class="box">
+<div class="seal" aria-hidden="true">🔐</div>
+<h2 id="secret-title">Gizli notu buldun!</h2>
+<p>Bunu ancak en meraklı ve en güzel kız bulabilirdi bebeğim 🙈</p>
+<p>9 Mayıs'ı iple çekiyorum. O gün sana bir kez "evet" diyeceğim, sonra da ömrümün her gününde seni yeniden seçeceğim.</p>
+<p>Bu küçük sır aramızda kalsın. ♥<br><i>— Eren</i></p>
+<button class="primary" id="secret-close">Kalbime sakladım ♥</button>
+</div>
+</div>
+<button id="music" hidden aria-label="Müziği aç/kapat">♪</button>
+<div id="yt" aria-hidden="true"></div>
 <noscript><p>Bu sürprizi açmak için tarayıcında JavaScript'i etkinleştirmen gerekiyor.</p></noscript>
 </main>
 <script>
@@ -233,7 +271,32 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
   ['pointerup','pointercancel','lostpointercapture'].forEach(type => finger.addEventListener(type, stopHold));
   finger.addEventListener('contextmenu', e => e.preventDefault());
   finger.addEventListener('click', e => { if (e.detail === 0) beginAnalysis(); });
-  $('start').addEventListener('click', () => { resetHold(); show('scan'); });
+  // ---- Müzik (YouTube) ----
+  const VIDEO_ID = 'r0W70R7hiS8';
+  let player = null, playerReady = false, musicOn = true, musicFailed = false;
+  window.onYouTubeIframeAPIReady = () => {
+    player = new YT.Player('yt', {
+      width: 2, height: 2, videoId: VIDEO_ID,
+      playerVars: { playsinline: 1, controls: 0, loop: 1, playlist: VIDEO_ID, rel: 0 },
+      events: {
+        onReady: () => { playerReady = true; if (musicWanted) playMusic(); },
+        onError: () => { musicFailed = true; $('music').hidden = true; }
+      }
+    });
+  };
+  const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.head.append(tag);
+  let musicWanted = false;
+  function playMusic(vol) {
+    musicWanted = true;
+    if (!playerReady || musicFailed || !musicOn) return;
+    try { player.unMute(); player.setVolume(vol || 55); player.playVideo(); } catch (e) {}
+  }
+  function setVol(v) { try { playerReady && player.setVolume(v); } catch (e) {} }
+  $('music').addEventListener('click', () => {
+    musicOn = !musicOn; $('music').classList.toggle('off', !musicOn);
+    try { if (playerReady) { musicOn ? (player.unMute(), player.playVideo()) : player.pauseVideo(); } } catch (e) {}
+  });
+  $('start').addEventListener('click', () => { resetHold(); show('scan'); playMusic(55); if (!musicFailed) $('music').hidden = false; });
   const logs = [
     ["Kalp bağlantısı kuruldu.",'ok',18],
     ["Gülüşünü düşünme: sürekli",'',39],
@@ -287,7 +350,7 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     if (token !== generation) return;
     await crash(token);
   }
-  const revealEls = [...document.querySelectorAll('#letter .paper > p, #letter .paper > .ornament, #letter .signature')];
+  const revealEls = [...document.querySelectorAll('#letter .paper > p, #letter .paper > .ornament, #letter .signature, #letter .counters')];
   revealEls.forEach(el => el.classList.add('reveal'));
   let revealIdx = 0, revealTimer = 0;
   function revealNext() {
@@ -295,6 +358,7 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     if (current !== 'letter') return;
     if (revealIdx >= revealEls.length) {
       document.querySelectorAll('#letter .later').forEach(el => el.classList.add('in'));
+      $('seal').classList.add('pulse');
       $('tapHint').hidden = true; return;
     }
     const el = revealEls[revealIdx++];
@@ -306,7 +370,7 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     revealTimer = setTimeout(revealNext, wait);
   }
   function startLetter() {
-    show('letter');
+    show('letter'); setVol(85);
     revealIdx = 0;
     revealEls.forEach(el => el.classList.remove('in'));
     document.querySelectorAll('#letter .later').forEach(el => el.classList.remove('in'));
@@ -318,6 +382,43 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     revealNext();
   });
   $('open-letter').addEventListener('click', startLetter);
+
+  // ---- Sayaçlar ----
+  const T = { together: new Date('2025-12-09T00:00:00+03:00'), engaged: new Date('2026-09-20T00:00:00+03:00'), wedding: new Date('2027-05-09T00:00:00+03:00') };
+  const fmt = n => n.toLocaleString('tr-TR');
+  function parts(ms) {
+    const s = Math.floor(ms / 1000);
+    return { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+  }
+  const line = p => `${fmt(p.d)} gün ${p.h} sa ${p.m} dk ${p.s} sn`;
+  function since(id, from, now) {
+    const p = parts(Math.max(0, now - from));
+    $(id).textContent = fmt(p.d) + ' gün'; $(id + '-s').textContent = line(p);
+  }
+  function tickCounters() {
+    const now = Date.now();
+    since('c-together', T.together, now);
+    since('c-engaged', T.engaged, now);
+    if (now < T.wedding) {
+      const p = parts(T.wedding - now);
+      $('c-wed').textContent = fmt(p.d) + ' gün'; $('c-wed-s').textContent = line(p);
+    } else {
+      $('c-wed-t').textContent = 'Evliyiz 💍 · 9 Mayıs 2027\'den beri';
+      const p = parts(now - T.wedding);
+      $('c-wed').textContent = fmt(p.d) + ' gün'; $('c-wed-s').textContent = line(p);
+    }
+  }
+  tickCounters(); setInterval(tickCounters, 1000);
+
+  // ---- Gizli kalp: mühre 3 kez dokun ----
+  let taps = 0, tapTimer = 0;
+  $('seal').addEventListener('click', e => {
+    e.stopPropagation();
+    taps++; clearTimeout(tapTimer); tapTimer = setTimeout(() => taps = 0, 1200);
+    vibrate(30);
+    if (taps >= 3) { taps = 0; $('secret').hidden = false; vibrate([80, 60, 120]); $('seal').classList.remove('pulse'); }
+  });
+  $('secret-close').addEventListener('click', () => { $('secret').hidden = true; });
   $('replay').addEventListener('click',() => { generation++; clearTimeout(revealTimer); $('tapHint').hidden = true; resetHold(); show('intro'); });
   $('reply').href = 'https://wa.me/?text='+encodeURIComponent('Ben de seni çok seviyorum Eren. ❤️');
 })();
