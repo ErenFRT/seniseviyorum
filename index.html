@@ -113,6 +113,17 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 .polaroid figcaption{font:italic 600 19px/1.4 Georgia,serif;color:#8e2e4c;text-align:center;margin-top:12px}
 .polaroid figcaption small{display:block;font:500 12px/1.5 system-ui,sans-serif;color:#795164;margin-top:4px;font-style:normal}
 .paper .reveal.polaroid.in{transform:rotate(-2.2deg)}
+.q-count{font-size:12px;color:var(--muted);margin-top:4px}
+.q-text{font-size:clamp(21px,6vw,26px);line-height:1.3;margin:14px 0 20px;font-weight:700}
+.opts{display:grid;gap:10px}
+.opt{width:100%;min-height:52px;border-radius:15px;border:1px solid var(--line);background:#ffffff0a;color:var(--ink);font-size:16px;font-weight:600;padding:12px 14px;text-align:left;display:flex;align-items:center;gap:12px;transition:background .2s,border-color .2s}
+.opt span{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:#ffffff14;font-size:13px;color:var(--rose)}
+.opt.good{background:#9de5c52a;border-color:var(--green)}
+.opt.good span{background:var(--green);color:#12101e}
+.opt.bad{background:#ff6b8a22;border-color:#ff6b8a;animation:nope .35s}
+@keyframes nope{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+#q-msg{min-height:48px;margin-top:16px;font-size:15px;line-height:1.5;color:var(--rose)}
+#q-msg.ok{color:var(--green)}
 @media(max-width:350px){.shell{padding-left:12px;padding-right:12px}.card{padding:18px}.paper{padding:20px}.kicker{letter-spacing:.1em}}
 @media(prefers-reduced-motion:reduce){.paper .reveal{opacity:1;filter:none;transform:none}.later{opacity:1;pointer-events:auto}*,*::before,*::after{animation:none!important;transition:none!important}.hearts{display:none!important}}
 </style>
@@ -145,6 +156,16 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 <svg class="print" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 46c-2-5-3-10-3-14 0-8 7-15 15-15s15 7 15 15M26 50c-2-5-3-11-3-18 0-5 4-9 9-9s9 4 9 9c0 6 1 11 3 15M32 54c-2-6-3-14-3-22a3 3 0 0 1 6 0c0 8 2 14 5 19M14 38c-1-2-1-4-1-6 0-10 9-19 19-19 6 0 11 2 15 6"/></svg>
 </button>
 <p id="hint" aria-live="polite">Dokunuşunu bekliyorum...</p>
+</div>
+</section>
+<section id="quiz" class="stage" hidden aria-labelledby="quiz-title">
+<div class="steps" aria-hidden="true"><i class="active"></i><i class="active"></i><i></i></div>
+<div class="card">
+<p class="kicker mono">Kimlik doğrulama · Gerçekten Sevilay mısın?</p>
+<p class="q-count mono" id="q-count"></p>
+<h1 class="q-text" id="quiz-title" tabindex="-1"></h1>
+<div class="opts" id="opts"></div>
+<p id="q-msg" aria-live="polite"></p>
 </div>
 </section>
 <section id="analysis" class="stage" hidden aria-labelledby="analysis-title">
@@ -256,8 +277,52 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
   function beginAnalysis() {
     if (current !== 'scan') return;
     resetHold();
+    startQuiz();
+  }
+  function goAnalysis() {
     show('analysis');
     analyze(++generation);
+  }
+  // ---- Soru oyunu ----
+  const QUIZ = [
+    { q: 'İlk buluşmamız nerede oldu?', a: 'Torium AVM', w: ['Marmara Park', 'Akbatı AVM', 'Mall of İstanbul'] },
+    { q: 'Birbirimize ilk "seni seviyorum" nerede dedik?', a: 'Telefonda', w: ['Sahilde yürürken', 'Arabada', 'Bir kafede'] },
+    { q: 'Benim en sevdiğim yemek hangisi?', a: 'Sarma', w: ['Mantı', 'İskender', 'Lahmacun'] },
+    { q: 'Bana aldığın ilk hediye neydi?', a: 'Hoodie', w: ['Saat', 'Parfüm', 'Cüzdan'] },
+    { q: 'En sevdiğim renk hangisi?', a: 'Mavi', w: ['Siyah', 'Yeşil', 'Kırmızı'] }
+  ];
+  const wrongMsgs = ['Bilemedin 😏 Bir daha düşün...', 'Hmm, Eren\'e sorsak mı? 🤨', 'Yok yok, o değil 🙈', 'Bilemedin 😏 Kalbine sor!'];
+  let qi = 0, wrongCount = 0, qLocked = false;
+  const shuffle = arr => arr.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
+  function startQuiz() { qi = 0; wrongCount = 0; show('quiz'); renderQ(); }
+  function renderQ() {
+    const item = QUIZ[qi]; qLocked = false;
+    $('q-count').textContent = 'Soru ' + (qi + 1) + ' / ' + QUIZ.length;
+    $('quiz-title').textContent = item.q;
+    $('q-msg').textContent = ''; $('q-msg').className = '';
+    const box = $('opts'); box.replaceChildren();
+    shuffle([item.a, ...item.w]).forEach((txt, i) => {
+      const b = document.createElement('button'); b.className = 'opt'; b.type = 'button';
+      const k = document.createElement('span'); k.textContent = 'ABCD'[i];
+      b.append(k, document.createTextNode(txt));
+      b.addEventListener('click', () => answer(b, txt === item.a));
+      box.append(b);
+    });
+  }
+  async function answer(btn, ok) {
+    if (qLocked || current !== 'quiz') return;
+    if (!ok) {
+      btn.classList.remove('bad'); void btn.offsetWidth; btn.classList.add('bad'); btn.disabled = true;
+      $('q-msg').textContent = wrongMsgs[wrongCount++ % wrongMsgs.length]; $('q-msg').className = '';
+      vibrate(120); return;
+    }
+    qLocked = true; btn.classList.add('good'); vibrate(40);
+    $('q-msg').className = 'ok';
+    $('q-msg').textContent = qi === QUIZ.length - 1 ? '✔ Kimlik doğrulandı: gerçekten Sevilay ♥' : 'Doğru! 💖';
+    await sleep(qi === QUIZ.length - 1 ? 1600 : 900);
+    if (current !== 'quiz') return;
+    qi++;
+    if (qi < QUIZ.length) renderQ(); else goAnalysis();
   }
   function tick(now) {
     if (!holding || current !== 'scan') return;
