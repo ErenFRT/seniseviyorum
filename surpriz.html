@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Sevilay için Gizli Analiz 🔒</title>
 <meta property="og:title" content="Sevilay için Gizli Analiz 🔒">
-<meta property="og:description" content="Bu bağlantı yalnızca Sevilay için. Kimseye gösterme 🤫">
+<meta property="og:description" content="Eren bu sayfayı sana özel hazırladı. Başka kimseye atma 🤫">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=JetBrains+Mono:wght@500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -78,6 +78,8 @@
   .sign.show { opacity: .9; }
   .final-btn { opacity: 0; pointer-events: none; transition: opacity .8s 1.2s; background: #fff; color: #e91e63; box-shadow: 0 10px 26px rgba(120, 0, 40, .35); }
   .final-btn.show { opacity: 1; pointer-events: auto; }
+  .private { margin-top: 22px; font-size: 14px; color: #ffc2d4; background: rgba(255,79,139,.1); border: 1px dashed rgba(255,143,179,.5); border-radius: 14px; padding: 12px 14px; }
+  .sign small { display: block; margin-top: 10px; font-size: 13px; opacity: .85; }
   @media (prefers-reduced-motion: reduce) { .shake, .glitch.on, .pct.over { animation: none; } }
 </style>
 </head>
@@ -90,6 +92,7 @@
   <h1>Sevilay, bu bağlantı sadece senin için 🔒</h1>
   <p>Kalp Laboratuvarı'na hoş geldin. Bugün çok önemli bir ölçüm yapacağız. Kimliğini doğrulamamız gerekiyor.</p>
   <button class="btn" id="start">Doğrulamaya Başla</button>
+  <p class="private">💌 Eren bu sayfayı <b>sana özel</b> hazırladı.<br>Başka kimseye atma, sadece senin 🤫</p>
 </section>
 
 <!-- 2: Parmak izi -->
@@ -123,7 +126,7 @@
 <section class="stage" id="s4">
   <div class="letter" id="letter"></div>
   <div class="big" id="big">Eren seni çok seviyor</div>
-  <div class="sign" id="sign">Ölçülemeyecek kadar, sonsuza kadar 💖</div>
+  <div class="sign" id="sign">Ölçülemeyecek kadar, sonsuza kadar 💖<br><small>Bu sayfa Eren tarafından sadece Sevilay için hazırlandı. Başkasına atmak yasak 😌</small></div>
   <a class="btn final-btn" id="reply" href="https://wa.me/" target="_blank" rel="noopener">Ben de onu çok seviyorum 💌</a>
 </section>
 
