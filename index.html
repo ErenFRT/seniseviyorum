@@ -108,6 +108,11 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 .romance #music{background:#fff9f4cc;border-color:#dca4ad;color:#9f3155}
 #music.off{opacity:.55;text-decoration:line-through}
 #yt{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:-1}
+.polaroid{margin:30px auto 6px;width:min(100%,330px);background:#fff;padding:12px 12px 16px;border-radius:6px;box-shadow:0 14px 34px #5a1a3330,0 2px 6px #5a1a331a;transform:rotate(-2.2deg)}
+.polaroid img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:2px;background:#f3e4e6}
+.polaroid figcaption{font:italic 600 19px/1.4 Georgia,serif;color:#8e2e4c;text-align:center;margin-top:12px}
+.polaroid figcaption small{display:block;font:500 12px/1.5 system-ui,sans-serif;color:#795164;margin-top:4px;font-style:normal}
+.paper .reveal.polaroid.in{transform:rotate(-2.2deg)}
 @media(max-width:350px){.shell{padding-left:12px;padding-right:12px}.card{padding:18px}.paper{padding:20px}.kicker{letter-spacing:.1em}}
 @media(prefers-reduced-motion:reduce){.paper .reveal{opacity:1;filter:none;transform:none}.later{opacity:1;pointer-events:auto}*,*::before,*::after{animation:none!important;transition:none!important}.hearts{display:none!important}}
 </style>
@@ -191,6 +196,10 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
 <div class="cnt"><b>Nişanlıyız · 20 Eylül 2026'dan beri</b><div class="big" id="c-engaged">—</div><div class="sub" id="c-engaged-s"></div></div>
 <div class="cnt wed"><b id="c-wed-t">Düğünümüze kalan · 9 Mayıs 2027</b><div class="big" id="c-wed">—</div><div class="sub" id="c-wed-s"></div></div>
 </div>
+<figure class="polaroid" id="photo">
+<img src="gelecek.jpg" alt="Sevilay ve Eren, kucaklarında bir kız ve bir erkek bebekle" width="900" height="1200" loading="lazy">
+<figcaption>Gelecekteki biz 🥹<small>Bir gün evimiz böyle gülüşlerle dolacak</small></figcaption>
+</figure>
 <p class="last">Not: Bütün bu kodları yazdım ama en güzel cümleyi hiçbir algoritma bulamadı. Seni çok seviyorum, bebeğim.</p>
 </article>
 <a class="primary later" id="reply" href="https://wa.me/?text=Ben%20de%20seni%20çok%20seviyorum%20Eren%20%E2%9D%A4%EF%B8%8F">Eren'e bir kalp gönder&nbsp; ♥</a>
@@ -350,7 +359,7 @@ body.romance .shell{justify-content:flex-start;padding-top:max(30px,env(safe-are
     if (token !== generation) return;
     await crash(token);
   }
-  const revealEls = [...document.querySelectorAll('#letter .paper > p, #letter .paper > .ornament, #letter .signature, #letter .counters')];
+  const revealEls = [...document.querySelectorAll('#letter .paper > p, #letter .paper > .ornament, #letter .signature, #letter .counters, #letter .polaroid')];
   revealEls.forEach(el => el.classList.add('reveal'));
   let revealIdx = 0, revealTimer = 0;
   function revealNext() {
